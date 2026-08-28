@@ -3,1382 +3,548 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Especificação Técnica — TreinaHub</title>
+    <title>Painel Inteligente de Treinamentos — Novo Mateus</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS (Excel Parser) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #1A3C6E;
-            --secondary-color: #4A5568;
-            --bg-color: #F7F8FA;
-            --text-color: #1F2933;
-            --card-bg: #FFFFFF;
-            --border-color: #E2E8F0;
+        .gradient-bg {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
         }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            background: var(--card-bg);
-            padding: 50px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--border-color);
-        }
-        h1 {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
-            padding-bottom: 12px;
-            margin-top: 0;
-            font-size: 2em;
-        }
-        h2 {
-            color: var(--primary-color);
-            margin-top: 35px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            font-size: 1.4em;
-        }
-        h3 {
-            color: var(--secondary-color);
-            margin-top: 25px;
-            font-size: 1.15em;
-        }
-        p, li {
-            font-size: 15px;
-        }
-        code {
-            background-color: #edf2f7;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-            font-size: 13px;
-            color: #2d3748;
-        }
-        pre {
-            background-color: #1e293b;
-            color: #f8fafc;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-size: 13px;
-            line-height: 1.45;
-        }
-        pre code {
-            background-color: transparent;
-            color: inherit;
-            padding: 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 25px 0;
-            font-size: 14px;
-        }
-        th, td {
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            text-align: left;
-        }
-        th {
-            background-color: #edf2f7;
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-        blockquote {
-            border-left: 4px solid var(--primary-color);
-            margin: 20px 0;
-            padding-left: 15px;
-            color: var(--secondary-color);
-            background-color: #f0f4f8;
-            padding: 10px 15px;
-            border-radius: 0 6px 6px 0;
-        }
-        hr {
-            border: 0;
-            height: 1px;
-            background: var(--border-color);
-            margin: 40px 0;
-        }
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            transition: all 0.2s ease-in-out;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Plataforma Corporativa de Gestão, Monitoramento e Inteligência de Treinamentos</h1>
-<h2>Especificação Técnica Completa — DHO | Universidade Corporativa</h2>
-<p><strong>Cliente:</strong> Rede de Varejo — PE / PB / AL<br />
-<strong>Escopo:</strong> 19.000 colaboradores | 67 lojas | 4 CDs | 1 CSC<br />
-<strong>Elaborado por:</strong> Análise de Sistemas Sênior — BI, DHO e Gestão de Treinamentos Corporativos</p>
-<hr />
-<h2>Sumário</h2>
-<ol>
-<li>Arquitetura Completa da Plataforma</li>
-<li>Banco de Dados Detalhado</li>
-<li>Estrutura de Tabelas e Relacionamentos</li>
-<li>Wireframes de Todas as Telas</li>
-<li>Jornada do Usuário</li>
-<li>Dashboard Executivo</li>
-<li>Dashboard Operacional (Mapa)</li>
-<li>Regras de Negócio</li>
-<li>Fluxo de Importação de Planilhas</li>
-<li>Tecnologias Recomendadas</li>
-<li>Estrutura de APIs</li>
-<li>Modelo SaaS Escalável</li>
-<li>Protótipo Visual / Design System</li>
-</ol>
-<hr />
-<h2>Visão Geral do Produto</h2>
-<p><strong>Nome sugerido:</strong> <code>TreinaHub</code> (ou <code>DHO Insights</code>) — Central Única de Inteligência de Treinamentos.</p>
-<p><strong>Proposta de valor:</strong>
-- Visão macro (executiva) e micro (individual/operacional) em uma única plataforma.
-- Prevenção de multas trabalhistas por NRs vencidas ou não realizadas.
-- Antecipação de necessidades de capacitação via alertas e projeções.
-- Redução de trabalho manual de planilhas do DHO (importação, cruzamento, relatórios).</p>
-<hr />
-<h1>1. Arquitetura Completa da Plataforma</h1>
-<h2>1.1 Visão em Camadas (Layered Architecture)</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│                        CAMADA DE APRESENTAÇÃO                     │
-│  Web App (SPA) — React/Next.js  |  App Mobile (PWA) — Gestores    │
-│  Portal do Colaborador (opcional) | Exportação Excel/PDF          │
-└───────────────────────────────┬────────────────────────────────--┘
-                                  │ HTTPS / REST / GraphQL
-┌───────────────────────────────▼────────────────────────────────--┐
-│                        CAMADA DE API GATEWAY                       │
-│  Auth (OAuth2/JWT) | Rate Limiting | Roteamento | Logs | Cache    │
-└───────────────────────────────┬────────────────────────────────--┘
-                                  │
-┌───────────────────────────────▼────────────────────────────────--┐
-│                    CAMADA DE SERVIÇOS (Microsserviços)             │
-│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐    │
-│  │ Colaborad. │ │ Treinamento│ │ Importação │ │ Notificação│    │
-│  │  Service   │ │  Service   │ │  (ETL)     │ │  Service   │    │
-│  └────────────┘ └────────────┘ └────────────┘ └────────────┘    │
-│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐    │
-│  │ Certificado│ │  BI/Report │ │  Auditoria │ │  Permissões│    │
-│  │  Service   │ │  Service   │ │  (Logs)    │ │  (RBAC)    │    │
-│  └────────────┘ └────────────┘ └────────────┘ └────────────┘    │
-└───────────────────────────────┬────────────────────────────────--┘
-                                  │
-┌───────────────────────────────▼────────────────────────────────--┐
-│                    CAMADA DE DADOS E INTEGRAÇÃO                    │
-│  PostgreSQL (OLTP) | Data Warehouse (OLAP) | Redis (cache/filas)  │
-│  Object Storage (certificados/PDFs) | Fila (RabbitMQ/SQS)         │
-└───────────────────────────────┬────────────────────────────────--┘
-                                  │
-┌───────────────────────────────▼────────────────────────────────--┐
-│                    INTEGRAÇÕES EXTERNAS                            │
-│  ERP/Folha (Totvs/Senior/SAP) | e-Social | LMS/EAD externo        │
-│  Active Directory / SSO | E-mail (SES/SendGrid) | WhatsApp API    │
-└─────────────────────────────────────────────────────────────────-┘
-</code></pre>
-<h2>1.2 Componentes Funcionais Principais</h2>
-<table>
-<thead>
-<tr>
-<th>Módulo</th>
-<th>Responsabilidade</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Cadastro &amp; Importação</strong></td>
-<td>Ingestão de colaboradores/treinamentos via Excel, cadastro manual, deduplicação</td>
-</tr>
-<tr>
-<td><strong>Gestão de Treinamentos</strong></td>
-<td>CRUD de treinamentos, turmas, presença, facilitadores, certificados</td>
-</tr>
-<tr>
-<td><strong>Motor de Regras (Business Rules Engine)</strong></td>
-<td>Calcula vencimentos, reciclagens, obrigatoriedade por cargo/função, aderência</td>
-</tr>
-<tr>
-<td><strong>BI / Dashboards</strong></td>
-<td>Camada analítica (macro e micro), drill-down, exportação</td>
-</tr>
-<tr>
-<td><strong>Mapa Operacional</strong></td>
-<td>Visão geográfica/organizacional hierárquica (Estado → Regional → Loja → Setor → Cargo)</td>
-</tr>
-<tr>
-<td><strong>Alertas &amp; Notificações</strong></td>
-<td>Motor de regras temporais (90/60/30 dias), push para gestores</td>
-</tr>
-<tr>
-<td><strong>Relatórios</strong></td>
-<td>Geração sob demanda e agendada, exportação XLSX/PDF</td>
-</tr>
-<tr>
-<td><strong>Gestão de Acessos (RBAC)</strong></td>
-<td>5 perfis com escopo de dados por hierarquia (loja/regional/estado)</td>
-</tr>
-<tr>
-<td><strong>Auditoria</strong></td>
-<td>Log de todas as alterações (LGPD compliance)</td>
-</tr>
-</tbody>
-</table>
-<h2>1.3 Arquitetura de Implantação (Deployment)</h2>
-<ul>
-<li><strong>Modelo:</strong> Cloud-native, containerizado (Docker + Kubernetes ou ECS/Fargate).</li>
-<li><strong>Ambientes:</strong> Dev → Homologação → Produção, com CI/CD (GitHub Actions/Azure DevOps).</li>
-<li><strong>Alta disponibilidade:</strong> Multi-AZ, load balancer, auto-scaling horizontal para os serviços de API e ETL (picos em datas de importação em massa).</li>
-<li><strong>Backup:</strong> Snapshots diários do banco (retenção 90 dias) + backup incremental de certificados no Object Storage.</li>
-<li><strong>Segurança:</strong> WAF, criptografia em trânsito (TLS 1.3) e em repouso (AES-256), segregação de dados sensíveis (CPF mascarado por perfil).</li>
-</ul>
-<h2>1.4 Diagrama de Fluxo de Dados (Alto Nível)</h2>
-<pre><code>Excel (RH/DHO) ──► [Importação/ETL] ──► [Validação] ──► [Banco OLTP]
-                                                              │
-                                                              ▼
-                                                     [ETL noturno / near-real-time]
-                                                              │
-                                                              ▼
-                                                    [Data Warehouse / Star Schema]
-                                                              │
-                              ┌───────────────────────────────┼───────────────────────────────┐
-                              ▼                                ▼                                ▼
-                     [Dashboard Executivo]           [Dashboard Operacional]           [Motor de Alertas]
-                                                                                                  │
-                                                                                                  ▼
-                                                                                     [E-mail / WhatsApp / Push]
-</code></pre>
-<hr />
-<h1>2. Banco de Dados Detalhado</h1>
-<h2>2.1 Modelo Conceitual (Entidades Principais)</h2>
-<ol>
-<li><code>colaborador</code></li>
-<li><code>estrutura_organizacional</code> (estado, regional, unidade/loja, setor, cargo)</li>
-<li><code>treinamento</code> (catálogo)</li>
-<li><code>turma_treinamento</code> (edição/execução de um treinamento)</li>
-<li><code>participacao</code> (colaborador x turma — matrícula do colaborador na edição)</li>
-<li><code>certificado</code></li>
-<li><code>facilitador</code></li>
-<li><code>regra_obrigatoriedade</code> (define quais treinamentos são obrigatórios para quais cargos/setores)</li>
-<li><code>reciclagem</code> (ligação treinamento → periodicidade)</li>
-<li><code>alerta</code> / <code>notificacao</code></li>
-<li><code>usuario_sistema</code> / <code>perfil_acesso</code></li>
-<li><code>importacao_log</code></li>
-<li><code>auditoria</code></li>
-</ol>
-<h2>2.2 Estratégia de Banco de Dados</h2>
-<ul>
-<li><strong>OLTP (transacional):</strong> PostgreSQL 16+ — ACID, particionamento por data para tabelas de grande volume (<code>participacao</code>, <code>auditoria</code>, <code>notificacao</code>).</li>
-<li><strong>OLAP (analítico):</strong> Data Warehouse em modelo <strong>estrela (star schema)</strong> — pode ser o próprio Postgres com views materializadas inicialmente, evoluindo para ClickHouse/BigQuery/Redshift conforme volume.</li>
-<li><strong>Cache:</strong> Redis para sessões, filas de notificação e cache de dashboards (TTL 15 min).</li>
-<li><strong>Arquivos:</strong> Object Storage (S3/Azure Blob) para certificados (PDF/imagem) e planilhas importadas (auditoria).</li>
-</ul>
-<h2>2.3 Volumetria Estimada (dimensionamento)</h2>
-<table>
-<thead>
-<tr>
-<th>Tabela</th>
-<th>Estimativa de linhas/ano</th>
-<th>Observação</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>colaborador</td>
-<td>19.000 (ativos) + histórico de desligados</td>
-<td>crescimento ~5-10%/ano</td>
-</tr>
-<tr>
-<td>treinamento (catálogo)</td>
-<td>200-500</td>
-<td>baixo crescimento</td>
-</tr>
-<tr>
-<td>turma_treinamento</td>
-<td>3.000-8.000/ano</td>
-<td>múltiplas turmas por treinamento</td>
-</tr>
-<tr>
-<td>participacao</td>
-<td>150.000-300.000/ano</td>
-<td>19.000 colaboradores × múltiplos treinamentos</td>
-</tr>
-<tr>
-<td>certificado</td>
-<td>~ igual à participacao</td>
-<td>1 certificado por participação concluída</td>
-</tr>
-<tr>
-<td>notificacao/alerta</td>
-<td>500.000+/ano</td>
-<td>alta granularidade (90/60/30 dias por pessoa/treinamento)</td>
-</tr>
-<tr>
-<td>auditoria</td>
-<td>milhões/ano</td>
-<td>requer particionamento mensal</td>
-</tr>
-</tbody>
-</table>
-<p>Isso reforça a necessidade de <strong>particionamento de tabelas</strong> (por ano/mês) e <strong>índices compostos</strong> nas colunas de filtro mais usadas (loja_id, regional_id, status, data_vencimento).</p>
-<hr />
-<h1>3. Estrutura de Tabelas e Relacionamentos</h1>
-<h2>3.1 Diagrama Entidade-Relacionamento (Mermaid)</h2>
-<pre><code class="language-mermaid">erDiagram
-    ESTADO ||--o{ REGIONAL : possui
-    REGIONAL ||--o{ UNIDADE : possui
-    UNIDADE ||--o{ SETOR : possui
-    UNIDADE {
-        int id PK
-        string nome
-        string tipo &quot;Loja/CD/CSC&quot;
-        int regional_id FK
-        string codigo_unidade
-        string endereco
-    }
-    COLABORADOR ||--o{ PARTICIPACAO : realiza
-    COLABORADOR }o--|| CARGO : ocupa
-    COLABORADOR }o--|| SETOR : pertence
-    COLABORADOR }o--|| UNIDADE : lotado_em
-    COLABORADOR }o--o| COLABORADOR : gerido_por
-    COLABORADOR {
-        int id PK
-        string nome
-        string cpf_hash
-        string matricula
-        int cargo_id FK
-        int setor_id FK
-        int unidade_id FK
-        int gestor_id FK
-        date data_admissao
-        string situacao &quot;Ativo/Afastado/Desligado&quot;
-    }
-    TREINAMENTO ||--o{ TURMA_TREINAMENTO : gera
-    TREINAMENTO ||--o{ REGRA_OBRIGATORIEDADE : define
-    TREINAMENTO ||--o| RECICLAGEM_CONFIG : possui
-    TREINAMENTO {
-        int id PK
-        string nome
-        string categoria &quot;NR/Comportamental/Tecnico/Operacional&quot;
-        int carga_horaria
-        string tipo &quot;Presencial/Online/Hibrido&quot;
-        bool obrigatorio
-        int validade_meses
-    }
-    TURMA_TREINAMENTO ||--o{ PARTICIPACAO : contem
-    TURMA_TREINAMENTO }o--|| FACILITADOR : ministrada_por
-    TURMA_TREINAMENTO {
-        int id PK
-        int treinamento_id FK
-        date data_inicio
-        date data_fim
-        string local
-        int facilitador_id FK
-        int unidade_id FK
-        int vagas
-    }
-    PARTICIPACAO ||--o| CERTIFICADO : gera
-    PARTICIPACAO {
-        int id PK
-        int colaborador_id FK
-        int turma_id FK
-        string status &quot;Concluido/Faltou/Em Andamento/Cancelado&quot;
-        decimal nota_avaliacao
-        decimal frequencia_pct
-        date data_conclusao
-        date data_vencimento
-    }
-    CERTIFICADO {
-        int id PK
-        int participacao_id FK
-        string numero_certificado
-        string arquivo_url
-        date data_emissao
-        string hash_validacao
-    }
-    FACILITADOR {
-        int id PK
-        string nome
-        string tipo &quot;Interno/Externo&quot;
-        string especialidade
-        string empresa_terceirizada
-    }
-    REGRA_OBRIGATORIEDADE {
-        int id PK
-        int treinamento_id FK
-        int cargo_id FK
-        int setor_id FK
-        string abrangencia &quot;Todos/Cargo/Setor/Unidade&quot;
-    }
-    RECICLAGEM_CONFIG {
-        int id PK
-        int treinamento_id FK
-        int periodicidade_meses
-        int alerta_1_dias
-        int alerta_2_dias
-        int alerta_3_dias
-    }
-    ALERTA_NOTIFICACAO {
-        int id PK
-        int colaborador_id FK
-        int treinamento_id FK
-        string tipo &quot;Vencimento90/Vencimento60/Vencimento30/Pendente&quot;
-        date data_envio
-        string canal &quot;Email/WhatsApp/Sistema&quot;
-        string destinatario_tipo &quot;Colaborador/Gestor/DHO&quot;
-        bool lido
-    }
-    USUARIO_SISTEMA }o--|| PERFIL_ACESSO : possui
-    USUARIO_SISTEMA {
-        int id PK
-        string nome
-        string email
-        int perfil_id FK
-        int escopo_unidade_id FK
-        int escopo_regional_id FK
-        bool ativo
-    }
-    PERFIL_ACESSO {
-        int id PK
-        string nome &quot;Admin DHO/Analista DHO/Gestor Regional/Gerente Loja/Consulta&quot;
-        json permissoes
-    }
-    IMPORTACAO_LOG {
-        int id PK
-        string arquivo_nome
-        int usuario_id FK
-        date data_importacao
-        int linhas_processadas
-        int linhas_erro
-        string status
-    }
-</code></pre>
-<h2>3.2 Dicionário de Dados — Tabelas Principais</h2>
-<h3><code>colaborador</code></h3>
-<table>
-<thead>
-<tr>
-<th>Campo</th>
-<th>Tipo</th>
-<th>Regras</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>id</td>
-<td>serial PK</td>
-<td>—</td>
-</tr>
-<tr>
-<td>nome</td>
-<td>varchar(150)</td>
-<td>obrigatório</td>
-</tr>
-<tr>
-<td>cpf</td>
-<td>varchar(11) criptografado</td>
-<td>único, mascarado na exibição (<strong>*.</strong>X-XX) conforme perfil</td>
-</tr>
-<tr>
-<td>matricula</td>
-<td>varchar(20)</td>
-<td>único</td>
-</tr>
-<tr>
-<td>cargo_id</td>
-<td>int FK → cargo</td>
-<td>obrigatório</td>
-</tr>
-<tr>
-<td>setor_id</td>
-<td>int FK → setor</td>
-<td>obrigatório</td>
-</tr>
-<tr>
-<td>unidade_id</td>
-<td>int FK → unidade</td>
-<td>obrigatório (loja/CD/CSC)</td>
-</tr>
-<tr>
-<td>regional_id</td>
-<td>int (derivado de unidade)</td>
-<td>—</td>
-</tr>
-<tr>
-<td>estado_id</td>
-<td>int (derivado de unidade)</td>
-<td>—</td>
-</tr>
-<tr>
-<td>gestor_id</td>
-<td>int FK → colaborador (self)</td>
-<td>opcional</td>
-</tr>
-<tr>
-<td>data_admissao</td>
-<td>date</td>
-<td>obrigatório</td>
-</tr>
-<tr>
-<td>situacao</td>
-<td>enum(Ativo, Afastado, Férias, Desligado)</td>
-<td>obrigatório</td>
-</tr>
-<tr>
-<td>data_desligamento</td>
-<td>date</td>
-<td>nulo se ativo</td>
-</tr>
-<tr>
-<td>created_at / updated_at</td>
-<td>timestamp</td>
-<td>auditoria</td>
-</tr>
-</tbody>
-</table>
-<h3><code>treinamento</code></h3>
-<table>
-<thead>
-<tr>
-<th>Campo</th>
-<th>Tipo</th>
-<th>Regras</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>id</td>
-<td>serial PK</td>
-<td>—</td>
-</tr>
-<tr>
-<td>nome</td>
-<td>varchar(200)</td>
-<td>obrigatório</td>
-</tr>
-<tr>
-<td>categoria</td>
-<td>enum(NR, Obrigatório Legal, Operacional, Técnico, Comportamental, Onboarding)</td>
-<td>—</td>
-</tr>
-<tr>
-<td>carga_horaria</td>
-<td>decimal</td>
-<td>horas</td>
-</tr>
-<tr>
-<td>tipo</td>
-<td>enum(Presencial, Online, Híbrido)</td>
-<td>—</td>
-</tr>
-<tr>
-<td>obrigatorio</td>
-<td>boolean</td>
-<td>—</td>
-</tr>
-<tr>
-<td>validade_meses</td>
-<td>int</td>
-<td>nulo = sem vencimento</td>
-</tr>
-<tr>
-<td>exige_reciclagem</td>
-<td>boolean</td>
-<td>—</td>
-</tr>
-<tr>
-<td>norma_referencia</td>
-<td>varchar(50)</td>
-<td>ex: NR-35, NR-12 (nulo se não aplicável)</td>
-</tr>
-<tr>
-<td>ativo</td>
-<td>boolean</td>
-<td>soft delete</td>
-</tr>
-</tbody>
-</table>
-<h3><code>participacao</code> (tabela fato — grande volume, particionada por ano)</h3>
-<table>
-<thead>
-<tr>
-<th>Campo</th>
-<th>Tipo</th>
-<th>Regras</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>id</td>
-<td>bigserial PK</td>
-<td>—</td>
-</tr>
-<tr>
-<td>colaborador_id</td>
-<td>int FK</td>
-<td>—</td>
-</tr>
-<tr>
-<td>turma_id</td>
-<td>int FK</td>
-<td>—</td>
-</tr>
-<tr>
-<td>status</td>
-<td>enum(Inscrito, Em Andamento, Concluído, Faltou, Cancelado, Reprovado)</td>
-<td>—</td>
-</tr>
-<tr>
-<td>frequencia_pct</td>
-<td>decimal(5,2)</td>
-<td>0-100</td>
-</tr>
-<tr>
-<td>nota_avaliacao</td>
-<td>decimal(5,2)</td>
-<td>nulo se não aplicável</td>
-</tr>
-<tr>
-<td>data_conclusao</td>
-<td>date</td>
-<td>nulo se pendente</td>
-</tr>
-<tr>
-<td>data_vencimento</td>
-<td>date (calculada)</td>
-<td>data_conclusao + validade_meses</td>
-</tr>
-<tr>
-<td>gerou_certificado</td>
-<td>boolean</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<h2>3.3 Relacionamentos-Chave</h2>
-<ul>
-<li><strong>1:N</strong> — Unidade → Colaboradores; Treinamento → Turmas; Turma → Participações.</li>
-<li><strong>N:N resolvida</strong> — Colaborador ↔ Treinamento, via <code>participacao</code> (que carrega turma e histórico).</li>
-<li><strong>Auto-relacionamento</strong> — Colaborador → Gestor (hierarquia direta) e Estrutura Organizacional (Estado→Regional→Unidade→Setor) para permitir drill-down no mapa operacional.</li>
-<li><strong>Regra de obrigatoriedade</strong> é a tabela que <strong>conecta cargo/setor/unidade a treinamentos exigidos</strong>, permitindo calcular "pendências" mesmo sem participação registrada (colaborador nunca fez o treinamento obrigatório para seu cargo).</li>
-</ul>
-<hr />
-<h1>4. Wireframes de Todas as Telas (Texto/Baixa Fidelidade)</h1>
-<blockquote>
-<p>Representação estrutural das telas principais. Layout geral: <strong>menu lateral fixo (esquerda)</strong> + <strong>topo com filtros globais e busca</strong> + <strong>área de conteúdo central</strong>.</p>
-</blockquote>
-<h2>4.1 Estrutura Geral (Shell)</h2>
-<pre><code>┌────┬────────────────────────────────────────────────────────────┐
-│    │  🔍 Busca   |  Filtro: Estado ▾ Regional ▾ Loja ▾ Período ▾ │ 🔔 │ 👤 Usuário
-│ L  ├────────────────────────────────────────────────────────────┤
-│ O  │                                                                │
-│ G  │                      ÁREA DE CONTEÚDO                         │
-│ O  │                                                                │
-│    │                                                                │
-│ ▸ Dashboard Executivo                                              │
-│ ▸ Dashboard Operacional (Mapa)                                     │
-│ ▸ Colaboradores                                                    │
-│ ▸ Treinamentos                                                     │
-│ ▸ Turmas / Agenda                                                  │
-│ ▸ Importação                                                       │
-│ ▸ Alertas                                                           │
-│ ▸ Relatórios                                                        │
-│ ▸ Administração / Permissões                                       │
-└────┴────────────────────────────────────────────────────────────┘
-</code></pre>
-<h2>4.2 Tela: Dashboard Executivo</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│ [Cards KPI]                                                        │
-│ ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐          │
-│ │ 87% Colab.│ │ 2.470 Não │ │ 312 Venc. │ │ 1.204 a   │          │
-│ │ Treinados │ │ Treinados │ │  (crítico)│ │ Vencer 30d│          │
-│ └───────────┘ └───────────┘ └───────────┘ └───────────┘          │
-│                                                                      │
-│ ┌───────────────────────────┐  ┌───────────────────────────┐     │
-│ │ Evolução Mensal (linha)   │  │ Aderência por Categoria    │     │
-│ │  (12 meses)               │  │  (barras: NR, Comport...)  │     │
-│ └───────────────────────────┘  └───────────────────────────┘     │
-│                                                                      │
-│ ┌───────────────────────────┐  ┌───────────────────────────┐     │
-│ │ Ranking de Lojas (top/bot)│  │ Ranking Regional / Estado  │     │
-│ │  🟢🟡🔴 semáforo por loja  │  │  PE | PB | AL              │     │
-│ └───────────────────────────┘  └───────────────────────────┘     │
-│                                                                      │
-│ ┌──────────────────────────────────────────────────────────┐     │
-│ │ Tabela: Treinamentos Obrigatórios Pendentes (top 20)       │     │
-│ │  [clicável → drill-down para visão micro]                  │     │
-│ └──────────────────────────────────────────────────────────┘     │
-└──────────────────────────────────────────────────────────────────┘
-</code></pre>
-<p>Todo card/gráfico é <strong>clicável</strong> → abre painel lateral (drawer) ou nova tela com o detalhamento (visão micro).</p>
-<h2>4.3 Tela: Visão Micro (Drill-down de Colaborador)</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│ ⬅ Voltar        João da Silva  |  Matrícula 00123  | Loja 045    │
-│ Cargo: Operador de Caixa   Setor: Frente de Loja   Status: Ativo  │
-├──────────────────────────────────────────────────────────────────┤
-│ [Aba: Resumo] [Aba: Treinamentos] [Aba: Certificados] [Aba: Hist.]│
-│                                                                      │
-│ Resumo:                                                              │
-│  ✅ 12 concluídos   ⚠️ 2 a vencer (30d)   ❌ 1 pendente obrigatório │
-│                                                                      │
-│ Tabela de Treinamentos:                                            │
-│  Nome            | Categoria | Status     | Conclusão | Vencimento │
-│  NR-12           | NR        | 🔴 Vencido | 10/02/24  | 10/02/25   │
-│  Atend. ao Cliente| Comport. | 🟢 Válido  | 03/2026   | 03/2027    │
-│  Onboarding      | Obrigat.  | ❌ Pendente| —         | —          │
-└──────────────────────────────────────────────────────────────────┘
-</code></pre>
-<h2>4.4 Tela: Mapa Operacional</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│  [Mapa geográfico PE/PB/AL com pins coloridos por % aderência]    │
-│  🟢 ≥90%   🟡 70-89%   🔴 &lt;70%                                    │
-│                                                                      │
-│  Painel lateral (breadcrumb drill-down):                          │
-│  Estado ▸ Regional ▸ Loja ▸ Setor ▸ Cargo                          │
-│                                                                      │
-│  PE (89%) ▸ Regional Recife (85%) ▸ Loja Boa Vista (72%) 🔴       │
-│      ▸ Setor Estoque (60%) 🔴  ▸ Cargo Repositor (55%) 🔴         │
-│                                                                      │
-│  [Botão: Ver colaboradores deste recorte] → Tabela filtrada       │
-└──────────────────────────────────────────────────────────────────┘
-</code></pre>
-<h2>4.5 Tela: Cadastro / Importação de Planilhas</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│ Importar Dados                                                     │
-│  Tipo de importação: (•) Colaboradores  ( ) Treinamentos          │
-│                       ( ) Participações  ( ) Certificados          │
-│                                                                      │
-│  [ Baixar modelo padrão .xlsx ]                                    │
-│  [ Arraste o arquivo aqui ou clique para selecionar ]              │
-│                                                                      │
-│  ── Pré-visualização (100 primeiras linhas) ──                     │
-│   Linha | Nome | Matrícula | ... | Status Validação                │
-│    1    | ...  | ...       | ... | ✅ OK                          │
-│    2    | ...  | ...       | ... | ⚠️ CPF inválido                │
-│                                                                      │
-│  Resumo: 1.850 válidas | 12 com erro | 3 duplicadas                │
-│  [ Corrigir e reenviar ]   [ Confirmar Importação ]                │
-└──────────────────────────────────────────────────────────────────┘
-</code></pre>
-<h2>4.6 Tela: Cadastro de Treinamento</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│ Novo Treinamento                                                    │
-│  Nome: [____________________]   Categoria: [NR ▾]                 │
-│  Carga Horária: [__] h          Tipo: (•) Presencial ( ) Online   │
-│  Obrigatório? ( ) Sim ( ) Não   Norma (NR): [NR-35 ▾]              │
-│  Validade: [__] meses           Exige reciclagem? ( ) Sim ( ) Não │
-│  Alertas: [90] [60] [30] dias antes do vencimento                  │
-│  Aplicável a: (•) Todos ( ) Cargo específico ( ) Setor específico │
-│  Facilitador padrão: [Selecionar ▾]                                 │
-│  [ Salvar ]  [ Cancelar ]                                          │
-└──────────────────────────────────────────────────────────────────┘
-</code></pre>
-<h2>4.7 Tela: Agenda de Turmas</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│ [Calendário mensal] ou [Lista]                                     │
-│  15/03 - NR-35 - Loja CD Jaboatão - Facilitador: Carlos - 20 vagas│
-│  16/03 - Integração Novos - Online - Facilitador: RH - 50 vagas  │
-│  [+ Nova Turma]                                                    │
-│  Ao abrir turma: lista de participantes, controle de presença,    │
-│  upload de lista de assinatura, emissão de certificados em lote.  │
-└──────────────────────────────────────────────────────────────────┘
-</code></pre>
-<h2>4.8 Tela: Alertas</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│ Central de Alertas                                                 │
-│  Filtro: [Tipo ▾] [Loja ▾] [Urgência ▾]                            │
-│  🔴 Vencido      - NR-12 - 45 colaboradores                       │
-│  🟠 30 dias      - NR-35 - 112 colaboradores                      │
-│  🟡 60 dias      - Brigada de Incêndio - 30 colaboradores          │
-│  🟢 90 dias      - Reciclagem NR-20 - 8 colaboradores              │
-│  [Enviar lembrete] [Exportar lista] [Configurar regras de alerta] │
-└──────────────────────────────────────────────────────────────────┘
-</code></pre>
-<h2>4.9 Tela: Relatórios</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│ Gerar Relatório                                                     │
-│  Tipo: [Por Loja ▾] [Por Regional] [Por Estado] [Por Treinamento] │
-│        [Por Colaborador] [NRs] [Aderência Geral]                   │
-│  Período: [___] a [___]     Formato: ( ) Excel ( ) PDF            │
-│  Agendar envio recorrente? ( ) Sim (semanal/mensal) ( ) Não       │
-│  [ Gerar Agora ]  [ Histórico de Relatórios Gerados ]              │
-└──────────────────────────────────────────────────────────────────┘
-</code></pre>
-<h2>4.10 Tela: Administração / Permissões</h2>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
-│ Usuários do Sistema                                                 │
-│  [+ Novo Usuário]                                                   │
-│  Nome | E-mail | Perfil | Escopo (Loja/Regional/Estado) | Status  │
-│  ...                                                                │
-│  Perfis: Admin DHO Corporativo | Analista DHO | Gestor Regional   │
-│          Gerente de Loja | Consulta                                │
-│  [Editar matriz de permissões por módulo/ação]                     │
-└──────────────────────────────────────────────────────────────────┘
-</code></pre>
-<hr />
-<h1>5. Jornada do Usuário</h1>
-<h2>5.1 Persona: Admin DHO Corporativo</h2>
-<ol>
-<li>Login (SSO corporativo) → Dashboard Executivo (visão de toda a rede).</li>
-<li>Configura regras de obrigatoriedade e reciclagem por cargo/NR.</li>
-<li>Importa planilhas em massa (admissões/desligamentos, treinamentos realizados).</li>
-<li>Audita ranking de lojas/regionais e identifica gargalos críticos.</li>
-<li>Gera relatório consolidado para diretoria e para auditorias trabalhistas (compliance NR).</li>
-<li>Gerencia usuários e permissões de acesso.</li>
-</ol>
-<h2>5.2 Persona: Analista DHO</h2>
-<ol>
-<li>Login → Dashboard Executivo (mesmo escopo corporativo, sem acesso a configurações administrativas).</li>
-<li>Realiza cadastro de treinamentos, turmas e facilitadores.</li>
-<li>Importa listas de presença e sobe certificados.</li>
-<li>Monitora alertas e dispara lembretes para lojas/regionais.</li>
-<li>Gera relatórios operacionais por loja/regional.</li>
-</ol>
-<h2>5.3 Persona: Gestor Regional</h2>
-<ol>
-<li>Login → Dashboard filtrado automaticamente pela sua Regional (escopo de dados).</li>
-<li>Visualiza ranking das lojas sob sua responsabilidade.</li>
-<li>Recebe alertas de vencimento e pendências obrigatórias das suas lojas.</li>
-<li>Acessa visão micro de qualquer colaborador da sua regional.</li>
-<li>Cobra gerentes de loja via sistema (ação "notificar gerente").</li>
-</ol>
-<h2>5.4 Persona: Gerente de Loja</h2>
-<ol>
-<li>Login → Dashboard filtrado apenas pela sua loja.</li>
-<li>Visualiza pendências da equipe (quem está com treinamento vencido/pendente).</li>
-<li>Agenda ou solicita turma de treinamento/reciclagem.</li>
-<li>Acompanha certificados da equipe.</li>
-<li>Não acessa dados de outras lojas.</li>
-</ol>
-<h2>5.5 Persona: Consulta (somente leitura)</h2>
-<ol>
-<li>Login → Dashboard read-only, sem botões de ação/edição.</li>
-<li>Usado por auditoria interna, compliance, ou diretoria que só quer visualizar indicadores.</li>
-</ol>
-<h2>5.6 Mapa de Jornada (fluxo macro)</h2>
-<pre><code>Login/SSO → Seleção automática de escopo (por perfil) → Dashboard (macro)
-   → Clique em indicador → Drill-down (micro) → Ação (notificar, exportar, editar)
-   → Volta ao dashboard ou navega para outro módulo
-</code></pre>
-<hr />
-<h1>6. Dashboard Executivo (Detalhamento)</h1>
-<h2>6.1 Objetivo</h2>
-<p>Visão macro, consolidada, para tomada de decisão estratégica (Diretoria, Admin DHO, Analista DHO).</p>
-<h2>6.2 Indicadores (KPIs) e Fórmulas</h2>
-<table>
-<thead>
-<tr>
-<th>Indicador</th>
-<th>Fórmula</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>% Colaboradores Treinados</td>
-<td>(Colaboradores com todos obrigatórios em dia / Total ativos) × 100</td>
-</tr>
-<tr>
-<td>% Aderência por Treinamento</td>
-<td>(Participações concluídas / Colaboradores elegíveis ao treinamento) × 100</td>
-</tr>
-<tr>
-<td>Treinamentos Vencidos</td>
-<td>Count(participação onde data_vencimento &lt; hoje e sem reciclagem registrada)</td>
-</tr>
-<tr>
-<td>Próximos do Vencimento (30/60/90d)</td>
-<td>Count(data_vencimento entre hoje e hoje+N dias)</td>
-</tr>
-<tr>
-<td>Obrigatórios Pendentes</td>
-<td>Colaboradores elegíveis (via regra_obrigatoriedade) SEM participação concluída</td>
-</tr>
-<tr>
-<td>Horas de Treinamento Realizadas</td>
-<td>Σ(carga_horaria × participações concluídas)</td>
-</tr>
-<tr>
-<td>Evolução Mensal/Anual</td>
-<td>Série temporal de conclusões agrupadas por mês/ano</td>
-</tr>
-<tr>
-<td>Ranking de Loja/Regional/Estado</td>
-<td>% aderência agregada por unidade, ordenado desc/asc</td>
-</tr>
-</tbody>
-</table>
-<h2>6.3 Filtros Globais (aplicam-se a todos os widgets)</h2>
-<ul>
-<li>Período (data início/fim)</li>
-<li>Estado, Regional, Loja/Unidade, Setor, Cargo</li>
-<li>Categoria de treinamento (NR, Obrigatório, Comportamental, Técnico, Operacional)</li>
-<li>Status (Válido, A vencer, Vencido, Pendente)</li>
-</ul>
-<h2>6.4 Interatividade</h2>
-<ul>
-<li>Todo gráfico/card é clicável → abre visão micro filtrada.</li>
-<li>Exportação do dashboard completo em PDF (snapshot) ou dados brutos em Excel.</li>
-<li>Modo "semáforo" (verde/amarelo/vermelho) em rankings, com thresholds configuráveis (ex.: verde ≥90%, amarelo 70-89%, vermelho &lt;70%).</li>
-</ul>
-<hr />
-<h1>7. Dashboard Operacional (Mapa)</h1>
-<h2>7.1 Objetivo</h2>
-<p>Visão geoespacial e hierárquica para identificar rapidamente <strong>onde</strong> estão os gargalos.</p>
-<h2>7.2 Camadas de Visualização</h2>
-<ol>
-<li><strong>Mapa (PE/PB/AL)</strong> com marcadores por loja/CD, coloridos por % de aderência.</li>
-<li><strong>Treemap ou árvore hierárquica</strong> Estado → Regional → Loja → Setor → Cargo, permitindo drill-down por clique (breadcrumb sempre visível).</li>
-<li><strong>Heatmap de setor x categoria de treinamento</strong> (ex.: qual setor tem mais NRs vencidas).</li>
-</ol>
-<h2>7.3 Regras de Cálculo de Gargalo</h2>
-<ul>
-<li>Um nó (loja/setor/cargo) é sinalizado como <strong>gargalo crítico</strong> quando:</li>
-<li>% aderência a obrigatórios &lt; 70%, OU</li>
-<li>Existe ≥1 treinamento de NR vencido no recorte, OU</li>
-<li>Existem colaboradores admitidos há &gt;30 dias sem onboarding concluído.</li>
-</ul>
-<h2>7.4 Ações Disponíveis no Mapa</h2>
-<ul>
-<li>Ver lista de colaboradores do recorte selecionado.</li>
-<li>Notificar gestor responsável pelo recorte.</li>
-<li>Solicitar abertura de nova turma de treinamento para o recorte.</li>
-</ul>
-<hr />
-<h1>8. Regras de Negócio</h1>
-<h2>8.1 Obrigatoriedade</h2>
-<ul>
-<li>RN01 — Um treinamento é obrigatório para um colaborador quando existe registro em <code>regra_obrigatoriedade</code> que o vincula por <strong>cargo</strong>, <strong>setor</strong>, <strong>unidade</strong> ou <strong>todos</strong>.</li>
-<li>RN02 — Colaborador sem participação concluída em treinamento obrigatório aplicável a ele é classificado como <strong>"Pendente"</strong>, mesmo sem nunca ter sido matriculado em turma.</li>
-<li>RN03 — Treinamentos de <strong>NR</strong> seguem tabela de referência oficial (ex.: NR-35 trabalho em altura, NR-12 máquinas, NR-33 espaço confinado, NR-20 inflamáveis, NR-06 EPI, NR-17 ergonomia) com periodicidade legal pré-configurada, não editável livremente pelo Analista (apenas Admin DHO, com trilha de auditoria).</li>
-</ul>
-<h2>8.2 Vencimento e Reciclagem</h2>
-<ul>
-<li>RN04 — <code>data_vencimento = data_conclusao + validade_meses</code> do treinamento.</li>
-<li>RN05 — Quando <code>exige_reciclagem = true</code>, ao vencer, o colaborador some do grupo "válido" e entra automaticamente no grupo "pendente de reciclagem" (não é uma pendência nova, é tratada com rótulo específico para diferenciar de quem nunca fez).</li>
-<li>RN06 — Alertas são disparados automaticamente em D-90, D-60, D-30 antes do vencimento, e novamente na data do vencimento e a cada 15 dias em atraso (configurável).</li>
-</ul>
-<h2>8.3 Situação do Colaborador</h2>
-<ul>
-<li>RN07 — Colaboradores com situação <strong>"Desligado"</strong> saem dos indicadores de aderência ativa, mas seu histórico é preservado para fins de auditoria (retenção mínima conforme política de compliance/LGPD).</li>
-<li>RN08 — Colaboradores <strong>"Afastados"</strong> (licença/atestado) são excluídos do denominador de cálculo de aderência durante o período de afastamento, evitando distorção do indicador.</li>
-<li>RN09 — Colaborador recém-admitido tem prazo de carência (parametrizável, ex.: 30 dias) antes de entrar como "pendente" no onboarding obrigatório.</li>
-</ul>
-<h2>8.4 Importação</h2>
-<ul>
-<li>RN10 — Toda importação passa por validação: CPF válido, matrícula única, cargo/setor/unidade existentes na base (ou criação assistida), datas coerentes (conclusão ≤ hoje).</li>
-<li>RN11 — Registros duplicados (mesmo colaborador + mesmo treinamento + mesma data) são identificados e não geram duplicidade de participação.</li>
-<li>RN12 — Toda importação gera log em <code>importacao_log</code>, rastreável e reversível (rollback) por até 24h.</li>
-</ul>
-<h2>8.5 Permissões e Escopo de Dados</h2>
-<ul>
-<li>RN13 — Gestor Regional e Gerente de Loja <strong>só visualizam dados do seu próprio escopo hierárquico</strong> (aplicado via filtro obrigatório na camada de API, nunca apenas no front-end).</li>
-<li>RN14 — Perfil "Consulta" nunca tem acesso a ações de escrita (CRUD bloqueado em nível de API).</li>
-<li>RN15 — CPF é armazenado criptografado e exibido mascarado, exceto para Admin DHO Corporativo (com log de auditoria de quem visualizou o dado completo).</li>
-</ul>
-<h2>8.6 Certificados</h2>
-<ul>
-<li>RN16 — Certificado só é gerado/vinculado quando <code>status = Concluído</code> e <code>frequencia_pct ≥ mínimo exigido</code> (parametrizável, padrão 75%).</li>
-<li>RN17 — Certificados possuem hash de validação para evitar fraude/adulteração (auditoria trabalhista).</li>
-</ul>
-<hr />
-<h1>9. Fluxo de Importação de Planilhas</h1>
-<h2>9.1 Fluxo Geral (ETL)</h2>
-<pre><code>1. Usuário baixa TEMPLATE padrão (.xlsx) por tipo de entidade
-        ↓
-2. Preenche/exporta do sistema de origem (ERP/folha) e faz upload
-        ↓
-3. Parser lê o arquivo (biblioteca: openpyxl/pandas no backend)
-        ↓
-4. VALIDAÇÃO em 3 níveis:
-   a) Estrutural — colunas obrigatórias presentes, tipos corretos
-   b) Referencial — cargo/setor/unidade/treinamento existem na base
-   c) Negócio — CPF válido, datas coerentes, duplicidade
-        ↓
-5. PRÉ-VISUALIZAÇÃO — mostra linhas válidas x com erro (editável inline)
-        ↓
-6. Usuário corrige erros na tela ou reenvia planilha corrigida
-        ↓
-7. CONFIRMAÇÃO — processamento em fila assíncrona (para grandes volumes)
-        ↓
-8. Gravação em banco (transação em lote/batch, com rollback em caso de falha)
-        ↓
-9. Log de importação + notificação ao usuário (sucesso/erro) por e-mail/sistema
-        ↓
-10. Disparo automático do recálculo de indicadores (dashboards) e alertas
-</code></pre>
-<h2>9.2 Templates de Importação (colunas obrigatórias)</h2>
-<p><strong>Template — Colaboradores</strong>
-<code>matricula | nome | cpf | cargo | setor | unidade | regional | estado | gestor_matricula | data_admissao | situacao</code></p>
-<p><strong>Template — Treinamentos (catálogo)</strong>
-<code>nome_treinamento | categoria | carga_horaria | tipo | obrigatorio(S/N) | norma_nr | validade_meses | exige_reciclagem(S/N)</code></p>
-<p><strong>Template — Participações/Presença</strong>
-<code>matricula | nome_treinamento | data_realizacao | facilitador | local | status | frequencia_pct | nota</code></p>
-<p><strong>Template — Certificados</strong>
-<code>matricula | nome_treinamento | data_conclusao | numero_certificado | arquivo (link/anexo)</code></p>
-<h2>9.3 Tratamento de Erros Comuns</h2>
-<table>
-<thead>
-<tr>
-<th>Erro</th>
-<th>Ação do Sistema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>CPF inválido/faltante</td>
-<td>Bloqueia linha, sinaliza para correção</td>
-</tr>
-<tr>
-<td>Matrícula não encontrada</td>
-<td>Sugere criação de novo colaborador ou correção de matrícula</td>
-</tr>
-<tr>
-<td>Treinamento não cadastrado</td>
-<td>Sugere cadastro automático do treinamento (fluxo assistido)</td>
-</tr>
-<tr>
-<td>Data de conclusão futura</td>
-<td>Bloqueia linha (inconsistência)</td>
-</tr>
-<tr>
-<td>Linha duplicada</td>
-<td>Ignora e sinaliza como "já existente", sem duplicar</td>
-</tr>
-</tbody>
-</table>
-<h2>9.4 Importação Recorrente / Automática (Integrações)</h2>
-<ul>
-<li>Job agendado (noturno) para sincronizar admissões/desligamentos direto do ERP/Folha via API ou arquivo SFTP, eliminando dependência de upload manual para dados cadastrais.</li>
-<li>Webhook de LMS/EAD externo para importar conclusões de treinamentos online automaticamente.</li>
-</ul>
-<hr />
-<h1>10. Tecnologias Recomendadas</h1>
-<h2>10.1 Stack Sugerida</h2>
-<table>
-<thead>
-<tr>
-<th>Camada</th>
-<th>Tecnologia</th>
-<th>Justificativa</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Frontend Web</td>
-<td><strong>React + Next.js + TypeScript</strong></td>
-<td>SPA robusta, SEO opcional, ecossistema maduro</td>
-</tr>
-<tr>
-<td>Componentes de gráfico</td>
-<td><strong>Recharts / D3.js / ECharts</strong></td>
-<td>Dashboards ricos estilo Power BI</td>
-</tr>
-<tr>
-<td>Mapas</td>
-<td><strong>Mapbox GL / Leaflet</strong></td>
-<td>Mapa operacional PE/PB/AL</td>
-</tr>
-<tr>
-<td>Backend API</td>
-<td><strong>Node.js (NestJS) ou .NET 8 (C#)</strong></td>
-<td>Arquitetura modular, forte tipagem, produtividade</td>
-</tr>
-<tr>
-<td>Alternativa Backend</td>
-<td><strong>Python (FastAPI)</strong></td>
-<td>Se houver forte componente de BI/ML (previsão de necessidade de treinamento)</td>
-</tr>
-<tr>
-<td>Banco Transacional</td>
-<td><strong>PostgreSQL 16</strong></td>
-<td>Robusto, particionamento nativo, extensões (PostGIS p/ mapa)</td>
-</tr>
-<tr>
-<td>Data Warehouse</td>
-<td><strong>PostgreSQL (views materializadas) → ClickHouse/BigQuery</strong> (evolução)</td>
-<td>Performance analítica em escala</td>
-</tr>
-<tr>
-<td>Cache/Filas</td>
-<td><strong>Redis + RabbitMQ (ou AWS SQS)</strong></td>
-<td>Processamento assíncrono de importações e alertas</td>
-</tr>
-<tr>
-<td>Armazenamento de arquivos</td>
-<td><strong>AWS S3 / Azure Blob Storage</strong></td>
-<td>Certificados, planilhas, anexos</td>
-</tr>
-<tr>
-<td>BI Embutido (opcional)</td>
-<td><strong>Metabase / Apache Superset</strong> embarcado, ou <strong>Power BI Embedded</strong></td>
-<td>Acelera entrega de relatórios avançados</td>
-</tr>
-<tr>
-<td>Autenticação</td>
-<td><strong>OAuth2/OIDC + Azure AD / SSO corporativo</strong></td>
-<td>Integração com AD já existente da empresa</td>
-</tr>
-<tr>
-<td>Infraestrutura</td>
-<td><strong>AWS ou Azure</strong>, containers (Docker + Kubernetes/ECS)</td>
-<td>Escalabilidade e HA</td>
-</tr>
-<tr>
-<td>CI/CD</td>
-<td><strong>GitHub Actions / Azure DevOps</strong></td>
-<td>Automação de deploy</td>
-</tr>
-<tr>
-<td>Observabilidade</td>
-<td><strong>Grafana + Prometheus / Datadog</strong></td>
-<td>Monitoramento de saúde da plataforma</td>
-</tr>
-<tr>
-<td>Notificações</td>
-<td><strong>SendGrid/SES (e-mail) + WhatsApp Business API</strong></td>
-<td>Alertas para gestores e lojas</td>
-</tr>
-</tbody>
-</table>
-<h2>10.2 Ferramentas de Suporte</h2>
-<ul>
-<li><strong>Geração de PDF:</strong> Puppeteer/wkhtmltopdf ou biblioteca nativa da stack.</li>
-<li><strong>Geração de Excel:</strong> ExcelJS (Node) / OpenPyXL (Python).</li>
-<li><strong>Processamento de planilhas em lote:</strong> filas assíncronas (Bull/BullMQ ou Celery).</li>
-</ul>
-<hr />
-<h1>11. Estrutura de APIs</h1>
-<h2>11.1 Padrão</h2>
-<ul>
-<li>REST (com opção de GraphQL para telas de dashboard com queries complexas/variáveis).</li>
-<li>Autenticação via <strong>Bearer Token (JWT)</strong>, escopo de dados aplicado no middleware conforme perfil do usuário.</li>
-<li>Versionamento: <code>/api/v1/...</code></li>
-<li>Paginação padrão (<code>?page=&amp;limit=</code>), filtros via query params, respostas em JSON padronizado (<code>{ data, meta, errors }</code>).</li>
-</ul>
-<h2>11.2 Principais Endpoints (exemplos)</h2>
-<h3>Colaboradores</h3>
-<pre><code>GET    /api/v1/colaboradores                 # lista paginada com filtros (loja, cargo, status)
-GET    /api/v1/colaboradores/{id}             # detalhe (visão micro)
-POST   /api/v1/colaboradores                  # criação individual
-PUT    /api/v1/colaboradores/{id}              # atualização
-GET    /api/v1/colaboradores/{id}/treinamentos # histórico completo
-GET    /api/v1/colaboradores/{id}/certificados
-</code></pre>
-<h3>Treinamentos</h3>
-<pre><code>GET    /api/v1/treinamentos
-POST   /api/v1/treinamentos
-PUT    /api/v1/treinamentos/{id}
-GET    /api/v1/treinamentos/{id}/turmas
-POST   /api/v1/treinamentos/{id}/regras-obrigatoriedade
-</code></pre>
-<h3>Turmas e Participações</h3>
-<pre><code>GET    /api/v1/turmas
-POST   /api/v1/turmas
-POST   /api/v1/turmas/{id}/participantes         # matricular colaboradores em lote
-PATCH  /api/v1/participacoes/{id}                 # atualizar status/presença
-POST   /api/v1/participacoes/{id}/certificado      # emitir certificado
-</code></pre>
-<h3>Importação</h3>
-<pre><code>POST   /api/v1/importacoes/colaboradores           # upload + processamento
-POST   /api/v1/importacoes/treinamentos
-POST   /api/v1/importacoes/participacoes
-GET    /api/v1/importacoes/{id}/status
-GET    /api/v1/importacoes/{id}/erros
-POST   /api/v1/importacoes/{id}/rollback
-</code></pre>
-<h3>Dashboards / BI</h3>
-<pre><code>GET    /api/v1/dashboard/executivo?filtros...
-GET    /api/v1/dashboard/operacional/mapa?filtros...
-GET    /api/v1/dashboard/ranking?nivel=loja|regional|estado
-GET    /api/v1/indicadores/aderencia?treinamento_id=&amp;unidade_id=
-</code></pre>
-<h3>Alertas</h3>
-<pre><code>GET    /api/v1/alertas?tipo=&amp;urgencia=&amp;unidade_id=
-POST   /api/v1/alertas/{id}/notificar
-PUT    /api/v1/alertas/config                       # configurar dias de antecedência
-</code></pre>
-<h3>Relatórios</h3>
-<pre><code>POST   /api/v1/relatorios/gerar        # { tipo, filtros, formato }
-GET    /api/v1/relatorios/{id}/download
-POST   /api/v1/relatorios/agendar       # relatórios recorrentes
-</code></pre>
-<h3>Administração / Permissões</h3>
-<pre><code>GET    /api/v1/usuarios
-POST   /api/v1/usuarios
-PUT    /api/v1/usuarios/{id}/perfil
-GET    /api/v1/perfis-acesso
-</code></pre>
-<h2>11.3 Segurança de API</h2>
-<ul>
-<li>Rate limiting por usuário/token.</li>
-<li>Escopo de dados sempre validado no backend (nunca confiar apenas em filtro do front-end).</li>
-<li>Logs de auditoria em toda operação de escrita (quem, quando, o quê, valor anterior/novo).</li>
-<li>Webhooks assinados (HMAC) para integrações externas (ERP, LMS).</li>
-</ul>
-<hr />
-<h1>12. Modelo SaaS Escalável</h1>
-<h2>12.1 Arquitetura Multi-Tenant (mesmo operando hoje como single-tenant)</h2>
-<p>Ainda que o uso inicial seja para uma única rede de varejo, recomenda-se <strong>desenhar desde já como SaaS multi-tenant</strong>, permitindo:
-- Replicar a plataforma para outras empresas do grupo/franquias no futuro.
-- Isolamento lógico de dados por <code>tenant_id</code> em todas as tabelas (mesmo com 1 único tenant ativo hoje).
-- Configurações (regras de obrigatoriedade, thresholds de alerta, cores/branding) parametrizáveis por tenant.</p>
-<h2>12.2 Estratégia de Isolamento</h2>
-<ul>
-<li><strong>Fase 1 (atual):</strong> Single-tenant lógico — <code>tenant_id</code> fixo, banco único.</li>
-<li><strong>Fase 2 (expansão):</strong> Multi-tenant com schema compartilhado (<code>tenant_id</code> em todas as queries) — mais barato e fácil de manter.</li>
-<li><strong>Fase 3 (grande escala):</strong> Multi-tenant com banco/schema dedicado por cliente maior, para isolamento total e customizações profundas.</li>
-</ul>
-<h2>12.3 Modelo de Cobrança (caso vire produto comercial)</h2>
-<table>
-<thead>
-<tr>
-<th>Plano</th>
-<th>Público-alvo</th>
-<th>Escopo</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Starter</td>
-<td>Redes pequenas (&lt;2.000 colaboradores)</td>
-<td>Dashboard básico, sem mapa operacional</td>
-</tr>
-<tr>
-<td>Professional</td>
-<td>Médio porte (2.000-20.000)</td>
-<td>Módulo completo (como especificado aqui)</td>
-</tr>
-<tr>
-<td>Enterprise</td>
-<td>Grandes redes/múltiplas empresas</td>
-<td>Multi-tenant, API aberta, BI avançado, SLA dedicado</td>
-</tr>
-</tbody>
-</table>
-<h2>12.4 Escalabilidade Técnica</h2>
-<ul>
-<li>Auto-scaling horizontal dos serviços de API e processamento de importação (picos sazonais: admissões em massa, campanhas de NR).</li>
-<li>Filas assíncronas para não travar a experiência do usuário durante importações grandes.</li>
-<li>CDN para assets estáticos e cache de dashboards (dados que mudam 1x/dia podem ser cacheados agressivamente).</li>
-<li>Separação clara entre carga transacional (OLTP) e carga analítica (OLAP/DW), evitando que relatórios pesados impactem o cadastro do dia a dia.</li>
-</ul>
-<hr />
-<h1>13. Protótipo Visual / Design System</h1>
-<h2>13.1 Referências de Estilo</h2>
-<p>Inspiração em <strong>Power BI, Tableau e sistemas corporativos de RH</strong> (Gupy, TOTVS RH, SAP SuccessFactors): visual clean, denso em dados mas organizado, paleta corporativa com uso de cor <strong>apenas para semântica</strong> (status/urgência).</p>
-<h2>13.2 Paleta de Cores Sugerida</h2>
-<table>
-<thead>
-<tr>
-<th>Uso</th>
-<th>Cor</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Primária (marca)</td>
-<td>Azul corporativo <code>#1A3C6E</code></td>
-</tr>
-<tr>
-<td>Secundária</td>
-<td>Cinza-azulado <code>#4A5568</code></td>
-</tr>
-<tr>
-<td>Sucesso / Em dia</td>
-<td>Verde <code>#22A559</code></td>
-</tr>
-<tr>
-<td>Atenção / A vencer</td>
-<td>Amarelo/Laranja <code>#F5A623</code></td>
-</tr>
-<tr>
-<td>Crítico / Vencido</td>
-<td>Vermelho <code>#E5484D</code></td>
-</tr>
-<tr>
-<td>Fundo</td>
-<td>Branco/Cinza claro <code>#F7F8FA</code></td>
-</tr>
-<tr>
-<td>Texto</td>
-<td>Cinza escuro <code>#1F2933</code></td>
-</tr>
-</tbody>
-</table>
-<h2>13.3 Tipografia</h2>
-<ul>
-<li>Fonte: <strong>Inter</strong> ou <strong>Roboto</strong> (legibilidade em dashboards densos).</li>
-<li>Hierarquia: Título 24px/bold, Subtítulo 16px/semibold, Corpo 14px/regular, Labels 12px/medium.</li>
-</ul>
-<h2>13.4 Componentes-Chave do Design System</h2>
-<ul>
-<li><strong>Cards de KPI</strong> com número grande + variação percentual (↑/↓) vs período anterior.</li>
-<li><strong>Semáforo</strong> (badge colorido) reutilizado em toda a plataforma para status de treinamento.</li>
-<li><strong>Breadcrumb hierárquico</strong> (Estado ▸ Regional ▸ Loja ▸ Setor ▸ Cargo) fixo no mapa operacional.</li>
-<li><strong>Tabelas densas com ordenação/filtro inline</strong> e exportação rápida (ícone Excel/PDF no canto).</li>
-<li><strong>Drawer lateral</strong> (painel deslizante) para drill-down sem sair da tela atual — preserva contexto do usuário.</li>
-<li><strong>Filtros globais persistentes</strong> no topo, aplicáveis a toda a sessão até serem limpos.</li>
-</ul>
-<h2>13.5 Acessibilidade e Responsividade</h2>
-<ul>
-<li>Contraste mínimo AA (WCAG 2.1) — importante pois cores carregam significado (semáforo), então sempre acompanhar cor + ícone/texto (não depender só da cor).</li>
-<li>Layout responsivo: menu lateral colapsa em ícones no tablet; em mobile, prioriza-se dashboard resumido e ações de gestor de loja (consulta rápida de pendências da equipe).</li>
-</ul>
-<hr />
-<h2>Roadmap de Implementação Sugerido</h2>
-<table>
-<thead>
-<tr>
-<th>Fase</th>
-<th>Entregas</th>
-<th>Duração estimada</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>1. Fundação</strong></td>
-<td>Modelagem de dados, autenticação/SSO, RBAC, CRUD colaboradores/treinamentos</td>
-<td>6-8 semanas</td>
-</tr>
-<tr>
-<td><strong>2. Importação</strong></td>
-<td>Motor de importação Excel + validações + templates</td>
-<td>4 semanas</td>
-</tr>
-<tr>
-<td><strong>3. Motor de Regras</strong></td>
-<td>Obrigatoriedade, vencimento, reciclagem, cálculo de aderência</td>
-<td>4 semanas</td>
-</tr>
-<tr>
-<td><strong>4. Dashboards</strong></td>
-<td>Executivo + Operacional (mapa) + drill-down micro</td>
-<td>6 semanas</td>
-</tr>
-<tr>
-<td><strong>5. Alertas &amp; Relatórios</strong></td>
-<td>Notificações automáticas, exportação Excel/PDF, agendamento</td>
-<td>4 semanas</td>
-</tr>
-<tr>
-<td><strong>6. Hardening &amp; Piloto</strong></td>
-<td>Testes com lojas piloto, ajustes de performance, treinamento de usuários DHO</td>
-<td>4 semanas</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Total estimado: ~28-30 semanas (7-8 meses)</strong> para MVP completo em produção, com entregas incrementais desde a Fase 3 (já utilizável pelo DHO).</p>
-<hr />
-<p><em>Documento elaborado como especificação técnica de referência. Pode ser refinado em protótipo navegável (Figma) e detalhamento de sprint a partir desta base.</em></p>
-    </div>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+    <!-- Top Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-white/20 p-2.5 rounded-xl backdrop-blur-md">
+                        <i class="fa-solid fa-chart-line text-2xl text-amber-300"></i>
+                    </span>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">TreinaHub — Painel de Indicadores</h1>
+                        <p class="text-blue-100 text-xs sm:text-sm">Novo Mateus (PE / AL / PB) • Controle de Presença via Forms</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Box -->
+            <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20 flex items-center gap-3 w-full md:w-auto">
+                <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleFileUpload(event)">
+                <label for="excelFile" class="cursor-pointer bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-md hover:shadow-lg">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span>Carregar Planilha (.xlsx)</span>
+                </label>
+                <span id="fileName" class="text-xs text-blue-100 truncate max-w-[180px]">Nenhum arquivo carregado</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Welcome Banner / Instruction -->
+        <div id="instructionBanner" class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm text-center mb-8">
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 mb-2">Pronto para visualizar seus dados!</h2>
+            <p class="text-slate-600 max-w-xl mx-auto text-sm mb-6">
+                Clique no botão <strong>"Carregar Planilha"</strong> acima e selecione o arquivo baixado do Forms (ex: <code>LISTA DE PRESENÇA NOVO MATEUS - PE _ AL _ PB (respostas).xlsx</code>).
+            </p>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-lg text-xs text-slate-500">
+                <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                <span>Seus dados são processados 100% no seu navegador de forma privativa e segura.</span>
+            </div>
+        </div>
+
+        <!-- Dashboard Content (Hidden until file uploaded) -->
+        <div id="dashboardContent" class="hidden space-y-8">
+
+            <!-- Filter Bar -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-filter text-blue-600"></i> Filtros de Pesquisa
+                    </h3>
+                    <button onclick="resetFilters()" class="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-right"></i> Limpar Filtros
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Unidade / Loja</label>
+                        <select id="filterUnidade" onchange="applyFilters()" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">Todas as Unidades</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Setor</label>
+                        <select id="filterSetor" onchange="applyFilters()" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">Todos os Setores</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Treinamento</label>
+                        <select id="filterTreinamento" onchange="applyFilters()" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">Todos os Treinamentos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Facilitador</label>
+                        <select id="filterFacilitador" onchange="applyFilters()" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">Todos os Facilitadores</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Presenças</span>
+                        <span class="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-users"></i>
+                        </span>
+                    </div>
+                    <p class="text-2xl font-black text-slate-900 mt-2" id="kpiTotalPresencas">0</p>
+                    <span class="text-[11px] text-slate-500">Registros no Forms</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Horas Capacitadas</span>
+                        <span class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-clock"></i>
+                        </span>
+                    </div>
+                    <p class="text-2xl font-black text-amber-600 mt-2" id="kpiTotalHoras">0</p>
+                    <span class="text-[11px] text-slate-500">Horas acumuladas</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Colaboradores Únicos</span>
+                        <span class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-id-card"></i>
+                        </span>
+                    </div>
+                    <p class="text-2xl font-black text-emerald-600 mt-2" id="kpiColaboradoresUnicos">0</p>
+                    <span class="text-[11px] text-slate-500">Por CPF individual</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Cursos Aplicados</span>
+                        <span class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </span>
+                    </div>
+                    <p class="text-2xl font-black text-indigo-600 mt-2" id="kpiTreinamentosUnicos">0</p>
+                    <span class="text-[11px] text-slate-500">Treinamentos distintos</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm card-hover">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Lojas / Unidades</span>
+                        <span class="w-8 h-8 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-store"></i>
+                        </span>
+                    </div>
+                    <p class="text-2xl font-black text-purple-600 mt-2" id="kpiUnidadesUnicas">0</p>
+                    <span class="text-[11px] text-slate-500">Unidades mobilizadas</span>
+                </div>
+            </div>
+
+            <!-- Charts Grid Row 1 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Chart 1: Top Treinamentos -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-blue-600"></i> Top 10 Treinamentos mais Aplicados
+                        </h4>
+                    </div>
+                    <div class="relative h-72">
+                        <canvas id="chartTreinamentos"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Participação por Unidade -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-store text-purple-600"></i> Top 10 Unidades com Maior Presença
+                        </h4>
+                    </div>
+                    <div class="relative h-72">
+                        <canvas id="chartUnidades"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid Row 2 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Chart 3: Participação por Setor -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-1">
+                    <h4 class="font-bold text-slate-900 text-sm mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-emerald-600"></i> Distribuição por Setor (Top 8)
+                    </h4>
+                    <div class="relative h-72">
+                        <canvas id="chartSetores"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Evolução Mensal -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2">
+                    <h4 class="font-bold text-slate-900 text-sm mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-indigo-600"></i> Evolução Mensal de Treinamentos
+                    </h4>
+                    <div class="relative h-72">
+                        <canvas id="chartEvolucao"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table Section -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-table text-slate-600"></i> Lista de Presenças Filtrada
+                        </h4>
+                        <p class="text-xs text-slate-500">Exibindo registros conforme os filtros selecionados</p>
+                    </div>
+                    <div class="w-full sm:w-auto">
+                        <input type="text" id="tableSearch" onkeyup="filterTableSearch()" placeholder="🔍 Buscar por nome, CPF ou cargo..." class="w-full sm:w-64 text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-100 rounded-xl">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">Data/Hora</th>
+                                <th class="p-3">Nome</th>
+                                <th class="p-3">CPF</th>
+                                <th class="p-3">Unidade</th>
+                                <th class="p-3">Setor</th>
+                                <th class="p-3">Cargo</th>
+                                <th class="p-3">Horas</th>
+                                <th class="p-3">Facilitador</th>
+                                <th class="p-3">Treinamento</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-100">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex justify-between items-center mt-4 text-xs text-slate-500">
+                    <span id="tableCount">Mostrando 0 de 0 registros</span>
+                    <span class="italic">* Limitado aos primeiros 100 resultados na visualização da tabela para alta performance</span>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        let rawData = [];
+        let filteredData = [];
+        let chart1, chart2, chart3, chart4;
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Get first sheet
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(sheet);
+                
+                processData(json);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function normalizeHeader(row) {
+            const keys = Object.keys(row);
+            
+            const findKey = (terms) => keys.find(k => terms.some(t => k.toLowerCase().includes(t.toLowerCase()))) || '';
+
+            return {
+                data: row[findKey(['Carimbo', 'Data', 'Timestamp'])],
+                nome: row[findKey(['NOME COMPLETO', 'Nome'])],
+                cpf: row[findKey(['CPF'])],
+                unidade: row[findKey(['UNIDADE', 'Loja'])],
+                setor: row[findKey(['SETOR'])],
+                cargo: row[findKey(['CARGO'])],
+                horas: parseFloat(row[findKey(['HORAS'])]) || 0,
+                facilitador: row[findKey(['FACILITADOR'])],
+                treinamento: row[findKey(['TREINAMENTO'])]
+            };
+        }
+
+        function processData(json) {
+            rawData = json.map(normalizeHeader);
+            filteredData = [...rawData];
+
+            document.getElementById('instructionBanner').classList.add('hidden');
+            document.getElementById('dashboardContent').classList.remove('hidden');
+
+            populateFilterDropdowns();
+            renderDashboard();
+        }
+
+        function populateFilterDropdowns() {
+            const unidades = [...new Set(rawData.map(d => d.unidade).filter(Boolean))].sort();
+            const setores = [...new Set(rawData.map(d => d.setor).filter(Boolean))].sort();
+            const treinamentos = [...new Set(rawData.map(d => d.treinamento).filter(Boolean))].sort();
+            const facilitadores = [...new Set(rawData.map(d => d.facilitador).filter(Boolean))].sort();
+
+            fillSelect('filterUnidade', unidades);
+            fillSelect('filterSetor', setores);
+            fillSelect('filterTreinamento', treinamentos);
+            fillSelect('filterFacilitador', facilitadores);
+        }
+
+        function fillSelect(id, list) {
+            const select = document.getElementById(id);
+            const firstOpt = select.options[0];
+            select.innerHTML = '';
+            select.appendChild(firstOpt);
+            list.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.textContent = item;
+                select.appendChild(opt);
+            });
+        }
+
+        function applyFilters() {
+            const u = document.getElementById('filterUnidade').value;
+            const s = document.getElementById('filterSetor').value;
+            const t = document.getElementById('filterTreinamento').value;
+            const f = document.getElementById('filterFacilitador').value;
+
+            filteredData = rawData.filter(d => {
+                return (!u || d.unidade === u) &&
+                       (!s || d.setor === s) &&
+                       (!t || d.treinamento === t) &&
+                       (!f || d.facilitador === f);
+            });
+
+            renderDashboard();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterUnidade').value = '';
+            document.getElementById('filterSetor').value = '';
+            document.getElementById('filterTreinamento').value = '';
+            document.getElementById('filterFacilitador').value = '';
+            filteredData = [...rawData];
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            updateKPIs();
+            renderChartTreinamentos();
+            renderChartUnidades();
+            renderChartSetores();
+            renderChartEvolucao();
+            renderTable();
+        }
+
+        function updateKPIs() {
+            document.getElementById('kpiTotalPresencas').textContent = filteredData.length.toLocaleString('pt-BR');
+            
+            const totalHoras = filteredData.reduce((acc, curr) => acc + (curr.horas || 0), 0);
+            document.getElementById('kpiTotalHoras').textContent = totalHoras.toLocaleString('pt-BR');
+
+            const cpfs = new Set(filteredData.map(d => d.cpf).filter(Boolean));
+            document.getElementById('kpiColaboradoresUnicos').textContent = cpfs.size.toLocaleString('pt-BR');
+
+            const treinos = new Set(filteredData.map(d => d.treinamento).filter(Boolean));
+            document.getElementById('kpiTreinamentosUnicos').textContent = treinos.size.toLocaleString('pt-BR');
+
+            const unidades = new Set(filteredData.map(d => d.unidade).filter(Boolean));
+            document.getElementById('kpiUnidadesUnicas').textContent = unidades.size.toLocaleString('pt-BR');
+        }
+
+        function getTopCount(field, limit = 10) {
+            const counts = {};
+            filteredData.forEach(d => {
+                const val = d[field] || 'Outros';
+                counts[val] = (counts[val] || 0) + 1;
+            });
+            const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            return {
+                labels: sorted.slice(0, limit).map(item => item[0]),
+                data: sorted.slice(0, limit).map(item => item[1])
+            };
+        }
+
+        function renderChartTreinamentos() {
+            const top = getTopCount('treinamento', 10);
+            if (chart1) chart1.destroy();
+            const ctx = document.getElementById('chartTreinamentos').getContext('2d');
+            chart1 = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top.labels.map(l => l.length > 25 ? l.substring(0, 25) + '...' : l),
+                    datasets: [{
+                        label: 'Presenças',
+                        data: top.data,
+                        backgroundColor: '#3B82F6',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function renderChartUnidades() {
+            const top = getTopCount('unidade', 10);
+            if (chart2) chart2.destroy();
+            const ctx = document.getElementById('chartUnidades').getContext('2d');
+            chart2 = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top.labels,
+                    datasets: [{
+                        label: 'Presenças',
+                        data: top.data,
+                        backgroundColor: '#8B5CF6',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function renderChartSetores() {
+            const top = getTopCount('setor', 8);
+            if (chart3) chart3.destroy();
+            const ctx = document.getElementById('chartSetores').getContext('2d');
+            chart3 = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: top.labels,
+                    datasets: [{
+                        data: top.data,
+                        backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#64748B']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+                }
+            });
+        }
+
+        function renderChartEvolucao() {
+            const monthly = {};
+            filteredData.forEach(d => {
+                if (d.data) {
+                    let dateObj = new Date(d.data);
+                    if (!isNaN(dateObj)) {
+                        const monthYear = dateObj.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+                        monthly[monthYear] = (monthly[monthYear] || 0) + 1;
+                    }
+                }
+            });
+
+            const labels = Object.keys(monthly);
+            const data = Object.values(monthly);
+
+            if (chart4) chart4.destroy();
+            const ctx = document.getElementById('chartEvolucao').getContext('2d');
+            chart4 = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total de Capacitações',
+                        data: data,
+                        borderColor: '#4F46E5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            const slice = filteredData.slice(0, 100);
+            slice.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 border-b border-slate-100";
+                
+                let dateStr = d.data ? new Date(d.data).toLocaleDateString('pt-BR') : '-';
+
+                tr.innerHTML = `
+                    <td class="p-3 font-medium whitespace-nowrap">${dateStr}</td>
+                    <td class="p-3 font-semibold text-slate-800">${d.nome || '-'}</td>
+                    <td class="p-3">${d.cpf || '-'}</td>
+                    <td class="p-3"><span class="bg-slate-100 px-2 py-1 rounded text-slate-700 text-[11px]">${d.unidade || '-'}</span></td>
+                    <td class="p-3">${d.setor || '-'}</td>
+                    <td class="p-3">${d.cargo || '-'}</td>
+                    <td class="p-3 font-bold text-amber-600">${d.horas || 0}h</td>
+                    <td class="p-3">${d.facilitador || '-'}</td>
+                    <td class="p-3 font-medium text-blue-600">${d.treinamento || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('tableCount').textContent = `Mostrando ${slice.length} de ${filteredData.length.toLocaleString('pt-BR')} registros`;
+        }
+
+        function filterTableSearch() {
+            const term = document.getElementById('tableSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+    </script>
 </body>
 </html>
